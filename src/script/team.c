@@ -1,11 +1,12 @@
-/** @file src/script/team.c %Team script routines. */
+/** 
+ * @file src/script/team.c 
+ * @brief Team script routines. 
+ */
 
 #include <stdio.h>
 #include "types.h"
 #include "../os/endian.h"
-
 #include "script.h"
-
 #include "../gui/gui.h"
 #include "../house.h"
 #include "../pool/team.h"
@@ -16,7 +17,6 @@
 #include "../tools.h"
 #include "../unit.h"
 
-
 /**
  * Gets the amount of members in the current team.
  *
@@ -25,10 +25,9 @@
  * @param script The script engine to operate on.
  * @return Amount of members in current team.
  */
-uint16 Script_Team_GetMembers(ScriptEngine *script)
-{
-	VARIABLE_NOT_USED(script);
-	return g_scriptCurrentTeam->members;
+uint16 Script_Team_GetMembers(ScriptEngine *script) {
+    VARIABLE_NOT_USED(script);
+    return g_scriptCurrentTeam->members;
 }
 
 /**
@@ -39,10 +38,9 @@ uint16 Script_Team_GetMembers(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The variable_06 of the current team.
  */
-uint16 Script_Team_GetVariable6(ScriptEngine *script)
-{
-	VARIABLE_NOT_USED(script);
-	return g_scriptCurrentTeam->minMembers;
+uint16 Script_Team_GetVariable6(ScriptEngine *script) {
+    VARIABLE_NOT_USED(script);
+    return g_scriptCurrentTeam->minMembers;
 }
 
 /**
@@ -53,10 +51,9 @@ uint16 Script_Team_GetVariable6(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The encoded target.
  */
-uint16 Script_Team_GetTarget(ScriptEngine *script)
-{
-	VARIABLE_NOT_USED(script);
-	return g_scriptCurrentTeam->target;
+uint16 Script_Team_GetTarget(ScriptEngine *script) {
+    VARIABLE_NOT_USED(script);
+    return g_scriptCurrentTeam->target;
 }
 
 /**
@@ -67,57 +64,56 @@ uint16 Script_Team_GetTarget(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The amount of space left in current team.
  */
-uint16 Script_Team_AddClosestUnit(ScriptEngine *script)
-{
-	Team *t;
-	Unit *closest = NULL;
-	Unit *closest2 = NULL;
-	uint16 minDistance = 0;
-	uint16 minDistance2 = 0;
-	PoolFindStruct find;
+uint16 Script_Team_AddClosestUnit(ScriptEngine *script) {
+    Team *t;
+    Unit *closest = NULL;
+    Unit *closest2 = NULL;
+    uint16 minDistance = 0;
+    uint16 minDistance2 = 0;
+    PoolFindStruct find;
 
-	VARIABLE_NOT_USED(script);
+    VARIABLE_NOT_USED(script);
 
-	t = g_scriptCurrentTeam;
+    t = g_scriptCurrentTeam;
 
-	if (t->members >= t->maxMembers) return 0;
+    if (t->members >= t->maxMembers) return 0;
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
-		Team *t2;
-		uint16 distance;
+    while (true) {
+        Unit *u;
+        Team *t2;
+        uint16 distance;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (!u->o.flags.s.byScenario) continue;
-		if (u->o.type == UNIT_SABOTEUR) continue;
-		if (g_table_unitInfo[u->o.type].movementType != t->movementType) continue;
-		if (u->team == 0) {
-			distance = Tile_GetDistance(t->position, u->o.position);
-			if (distance >= minDistance && minDistance != 0) continue;
-			minDistance = distance;
-			closest = u;
-			continue;
-		}
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (!u->o.flags.s.byScenario) continue;
+        if (u->o.type == UNIT_SABOTEUR) continue;
+        if (g_table_unitInfo[u->o.type].movementType != t->movementType) continue;
+        if (u->team == 0) {
+            distance = Tile_GetDistance(t->position, u->o.position);
+            if (distance >= minDistance && minDistance != 0) continue;
+            minDistance = distance;
+            closest = u;
+            continue;
+        }
 
-		t2 = Team_Get_ByIndex(u->team - 1);
-		if (t2->members > t2->minMembers) continue;
+        t2 = Team_Get_ByIndex(u->team - 1);
+        if (t2->members > t2->minMembers) continue;
 
-		distance = Tile_GetDistance(t->position, u->o.position);
-		if (distance >= minDistance2 && minDistance2 != 0) continue;
-		minDistance2 = distance;
-		closest2 = u;
-	}
+        distance = Tile_GetDistance(t->position, u->o.position);
+        if (distance >= minDistance2 && minDistance2 != 0) continue;
+        minDistance2 = distance;
+        closest2 = u;
+    }
 
-	if (closest == NULL) closest = closest2;
-	if (closest == NULL) return 0;
+    if (closest == NULL) closest = closest2;
+    if (closest == NULL) return 0;
 
-	Unit_RemoveFromTeam(closest);
-	return Unit_AddToTeam(closest, t);
+    Unit_RemoveFromTeam(closest);
+    return Unit_AddToTeam(closest, t);
 }
 
 /**
@@ -129,60 +125,59 @@ uint16 Script_Team_AddClosestUnit(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The average distance.
  */
-uint16 Script_Team_GetAverageDistance(ScriptEngine *script)
-{
-	uint16 averageX = 0;
-	uint16 averageY = 0;
-	uint16 count = 0;
-	uint16 distance = 0;
-	Team *t;
-	PoolFindStruct find;
+uint16 Script_Team_GetAverageDistance(ScriptEngine *script) {
+    uint16 averageX = 0;
+    uint16 averageY = 0;
+    uint16 count = 0;
+    uint16 distance = 0;
+    Team *t;
+    PoolFindStruct find;
 
-	VARIABLE_NOT_USED(script);
+    VARIABLE_NOT_USED(script);
 
-	t = g_scriptCurrentTeam;
+    t = g_scriptCurrentTeam;
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
+    while (true) {
+        Unit *u;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (t->index != u->team - 1) continue;
-		count++;
-		averageX += (u->o.position.x >> 8) & 0x3f;
-		averageY += (u->o.position.y >> 8) & 0x3f;
-	}
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (t->index != u->team - 1) continue;
+        count++;
+        averageX += (u->o.position.x >> 8) & 0x3f;
+        averageY += (u->o.position.y >> 8) & 0x3f;
+    }
 
-	if (count == 0) return 0;
-	averageX /= count;
-	averageY /= count;
+    if (count == 0) return 0;
+    averageX /= count;
+    averageY /= count;
 
-	Tile_MakeXY(t->position, averageX, averageY);
+    Tile_MakeXY(t->position, averageX, averageY);
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
+    while (true) {
+        Unit *u;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (t->index != u->team - 1) continue;
-		distance += Tile_GetDistanceRoundedUp(u->o.position, t->position);
-	}
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (t->index != u->team - 1) continue;
+        distance += Tile_GetDistanceRoundedUp(u->o.position, t->position);
+    }
 
-	distance /= count;
+    distance /= count;
 
-	if (t->target == 0 || t->targetTile == 0) return distance;
+    if (t->target == 0 || t->targetTile == 0) return distance;
 
-	if (Tile_GetDistancePacked(Tile_PackXY(averageX, averageY), Tools_Index_GetPackedTile(t->target)) <= 10) t->targetTile = 2;
+    if (Tile_GetDistancePacked(Tile_PackXY(averageX, averageY), Tools_Index_GetPackedTile(t->target)) <= 10) t->targetTile = 2;
 
-	return distance;
+    return distance;
 }
 
 /**
@@ -193,56 +188,55 @@ uint16 Script_Team_GetAverageDistance(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The number of moving units.
  */
-uint16 Script_Team_Unknown0543(ScriptEngine *script)
-{
-	Team *t;
-	uint16 count = 0;
-	uint16 distance;
-	PoolFindStruct find;
+uint16 Script_Team_Unknown0543(ScriptEngine *script) {
+    Team *t;
+    uint16 count = 0;
+    uint16 distance;
+    PoolFindStruct find;
 
-	t = g_scriptCurrentTeam;
-	distance = STACK_PEEK(1);
+    t = g_scriptCurrentTeam;
+    distance = STACK_PEEK(1);
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
-		tile32 tile;
-		uint16 distanceUnitDest;
-		uint16 distanceUnitTeam;
-		uint16 distanceTeamDest;
+    while (true) {
+        Unit *u;
+        tile32 tile;
+        uint16 distanceUnitDest;
+        uint16 distanceUnitTeam;
+        uint16 distanceTeamDest;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (t->index != u->team - 1) continue;
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (t->index != u->team - 1) continue;
 
-		tile = Tools_Index_GetTile(u->targetMove);
-		distanceUnitTeam = Tile_GetDistanceRoundedUp(u->o.position, t->position);
+        tile = Tools_Index_GetTile(u->targetMove);
+        distanceUnitTeam = Tile_GetDistanceRoundedUp(u->o.position, t->position);
 
-		if (u->targetMove != 0) {
-			distanceUnitDest = Tile_GetDistanceRoundedUp(u->o.position, tile);
-			distanceTeamDest = Tile_GetDistanceRoundedUp(t->position, tile);
-		} else {
-			distanceUnitDest = 64;
-			distanceTeamDest = 64;
-		}
+        if (u->targetMove != 0) {
+            distanceUnitDest = Tile_GetDistanceRoundedUp(u->o.position, tile);
+            distanceTeamDest = Tile_GetDistanceRoundedUp(t->position, tile);
+        } else {
+            distanceUnitDest = 64;
+            distanceTeamDest = 64;
+        }
 
-		if ((distanceUnitDest < distanceTeamDest && (distance + 2) < distanceUnitTeam) || (distanceUnitDest >= distanceTeamDest && distanceUnitTeam > distance)) {
-			Unit_SetAction(u, ACTION_MOVE);
+        if ((distanceUnitDest < distanceTeamDest && (distance + 2) < distanceUnitTeam) || (distanceUnitDest >= distanceTeamDest && distanceUnitTeam > distance)) {
+            Unit_SetAction(u, ACTION_MOVE);
 
-			tile = Tile_MoveByRandom(t->position, distance << 4, true);
+            tile = Tile_MoveByRandom(t->position, distance << 4, true);
 
-			Unit_SetDestination(u, Tools_Index_Encode(Tile_PackTile(tile), IT_TILE));
-			count++;
-			continue;
-		}
+            Unit_SetDestination(u, Tools_Index_Encode(Tile_PackTile(tile), IT_TILE));
+            count++;
+            continue;
+        }
 
-		Unit_SetAction(u, ACTION_GUARD);
-	}
+        Unit_SetAction(u, ACTION_GUARD);
+    }
 
-	return count;
+    return count;
 }
 
 /**
@@ -253,36 +247,35 @@ uint16 Script_Team_Unknown0543(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The encoded index of the best target or 0 if none found.
  */
-uint16 Script_Team_FindBestTarget(ScriptEngine *script)
-{
-	Team *t;
-	PoolFindStruct find;
+uint16 Script_Team_FindBestTarget(ScriptEngine *script) {
+    Team *t;
+    PoolFindStruct find;
 
-	VARIABLE_NOT_USED(script);
+    VARIABLE_NOT_USED(script);
 
-	t = g_scriptCurrentTeam;
+    t = g_scriptCurrentTeam;
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
-		uint16 target;
+    while (true) {
+        Unit *u;
+        uint16 target;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (u->team - 1 != t->index) continue;
-		target = Unit_FindBestTargetEncoded(u, t->action == TEAM_ACTION_KAMIKAZE ? 4 : 0);
-		if (target == 0) continue;
-		if (t->target == target) return target;
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (u->team - 1 != t->index) continue;
+        target = Unit_FindBestTargetEncoded(u, t->action == TEAM_ACTION_KAMIKAZE ? 4 : 0);
+        if (target == 0) continue;
+        if (t->target == target) return target;
 
-		t->target = target;
-		t->targetTile = Tile_GetTileInDirectionOf(Tile_PackTile(u->o.position), Tools_Index_GetPackedTile(target));
-		return target;
-	}
+        t->target = target;
+        t->targetTile = Tile_GetTileInDirectionOf(Tile_PackTile(u->o.position), Tools_Index_GetPackedTile(target));
+        return target;
+    }
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -293,22 +286,21 @@ uint16 Script_Team_FindBestTarget(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The value 0. Always.
  */
-uint16 Script_Team_Load(ScriptEngine *script)
-{
-	Team *t;
-	uint16 type;
+uint16 Script_Team_Load(ScriptEngine *script) {
+    Team *t;
+    uint16 type;
 
-	t = g_scriptCurrentTeam;
-	type = STACK_PEEK(1);
+    t = g_scriptCurrentTeam;
+    type = STACK_PEEK(1);
 
-	if (t->action == type) return 0;
+    if (t->action == type) return 0;
 
-	t->action = type;
+    t->action = type;
 
-	Script_Reset(&t->script, g_scriptTeam);
-	Script_Load(&t->script, type & 0xFF);
+    Script_Reset(&t->script, g_scriptTeam);
+    Script_Load(&t->script, type & 0xFF);
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -319,24 +311,23 @@ uint16 Script_Team_Load(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The value 0. Always.
  */
-uint16 Script_Team_Load2(ScriptEngine *script)
-{
-	Team *t;
-	uint16 type;
+uint16 Script_Team_Load2(ScriptEngine *script) {
+    Team *t;
+    uint16 type;
 
-	VARIABLE_NOT_USED(script);
+    VARIABLE_NOT_USED(script);
 
-	t = g_scriptCurrentTeam;
-	type = t->actionStart;
+    t = g_scriptCurrentTeam;
+    type = t->actionStart;
 
-	if (t->action == type) return 0;
+    if (t->action == type) return 0;
 
-	t->action = type;
+    t->action = type;
 
-	Script_Reset(&t->script, g_scriptTeam);
-	Script_Load(&t->script, type & 0xFF);
+    Script_Reset(&t->script, g_scriptTeam);
+    Script_Load(&t->script, type & 0xFF);
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -347,60 +338,59 @@ uint16 Script_Team_Load2(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The value 0. Always.
  */
-uint16 Script_Team_Unknown0788(ScriptEngine *script)
-{
-	Team *t;
-	tile32 tile;
-	PoolFindStruct find;
+uint16 Script_Team_Unknown0788(ScriptEngine *script) {
+    Team *t;
+    tile32 tile;
+    PoolFindStruct find;
 
-	VARIABLE_NOT_USED(script);
+    VARIABLE_NOT_USED(script);
 
-	t = g_scriptCurrentTeam;
-	if (t->target == 0) return 0;
+    t = g_scriptCurrentTeam;
+    if (t->target == 0) return 0;
 
-	tile = Tools_Index_GetTile(t->target);
+    tile = Tools_Index_GetTile(t->target);
 
-	find.houseID = t->houseID;
-	find.index   = 0xFFFF;
-	find.type    = 0xFFFF;
+    find.houseID = t->houseID;
+    find.index   = 0xFFFF;
+    find.type    = 0xFFFF;
 
-	while (true) {
-		Unit *u;
-		uint16 distance;
-		uint16 packed;
-		int16 orientation;
+    while (true) {
+        Unit *u;
+        uint16 distance;
+        uint16 packed;
+        int16 orientation;
 
-		u = Unit_Find(&find);
-		if (u == NULL) break;
-		if (u->team - 1 != t->index) continue;
-		if (t->target == 0) {
-			Unit_SetAction(u, ACTION_GUARD);
-			continue;
-		}
+        u = Unit_Find(&find);
+        if (u == NULL) break;
+        if (u->team - 1 != t->index) continue;
+        if (t->target == 0) {
+            Unit_SetAction(u, ACTION_GUARD);
+            continue;
+        }
 
-		distance = g_table_unitInfo[u->o.type].fireDistance << 8;
-		if (u->actionID == ACTION_ATTACK && u->targetAttack == t->target) {
-			if (u->targetMove != 0) continue;
-			if (Tile_GetDistance(u->o.position, tile) >= distance) continue;
-		}
+        distance = g_table_unitInfo[u->o.type].fireDistance << 8;
+        if (u->actionID == ACTION_ATTACK && u->targetAttack == t->target) {
+            if (u->targetMove != 0) continue;
+            if (Tile_GetDistance(u->o.position, tile) >= distance) continue;
+        }
 
-		if (u->actionID != ACTION_ATTACK) Unit_SetAction(u, ACTION_ATTACK);
+        if (u->actionID != ACTION_ATTACK) Unit_SetAction(u, ACTION_ATTACK);
 
-		orientation = (Tile_GetDirection(tile, u->o.position) & 0xC0) + Tools_RandomLCG_Range(0, 127);
-		if (orientation < 0) orientation += 256;
+        orientation = (Tile_GetDirection(tile, u->o.position) & 0xC0) + Tools_RandomLCG_Range(0, 127);
+        if (orientation < 0) orientation += 256;
 
-		packed = Tile_PackTile(Tile_MoveByDirection(tile, orientation, distance));
+        packed = Tile_PackTile(Tile_MoveByDirection(tile, orientation, distance));
 
-		if (Object_GetByPackedTile(packed) == NULL) {
-			Unit_SetDestination(u, Tools_Index_Encode(packed, IT_TILE));
-		} else {
-			Unit_SetDestination(u, Tools_Index_Encode(Tile_PackTile(tile), IT_TILE));
-		}
+        if (Object_GetByPackedTile(packed) == NULL) {
+            Unit_SetDestination(u, Tools_Index_Encode(packed, IT_TILE));
+        } else {
+            Unit_SetDestination(u, Tools_Index_Encode(Tile_PackTile(tile), IT_TILE));
+        }
 
-		Unit_SetTarget(u, t->target);
-	}
+        Unit_SetTarget(u, t->target);
+    }
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -412,19 +402,18 @@ uint16 Script_Team_Unknown0788(ScriptEngine *script)
  * @param script The script engine to operate on.
  * @return The value 0. Always.
  */
-uint16 Script_Team_DisplayText(ScriptEngine *script)
-{
-	Team *t;
-	char *text;
-	uint16 offset;
+uint16 Script_Team_DisplayText(ScriptEngine *script) {
+    Team *t;
+    char *text;
+    uint16 offset;
 
-	t = g_scriptCurrentTeam;
-	if (t->houseID == g_playerHouseID) return 0;
+    t = g_scriptCurrentTeam;
+    if (t->houseID == g_playerHouseID) return 0;
 
-	offset = BETOH16(*(script->scriptInfo->text + STACK_PEEK(1)));
-	text = (char *)script->scriptInfo->text + offset;
+    offset = BETOH16(*(script->scriptInfo->text + STACK_PEEK(1)));
+    text = (char *)script->scriptInfo->text + offset;
 
-	GUI_DisplayText(text, 0, STACK_PEEK(2), STACK_PEEK(3), STACK_PEEK(4));
+    GUI_DisplayText(text, 0, STACK_PEEK(2), STACK_PEEK(3), STACK_PEEK(4));
 
-	return 0;
+    return 0;
 }
